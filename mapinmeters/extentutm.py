@@ -1,4 +1,5 @@
 import math as _math
+import tilemapbase
 from tilemapbase import Extent
 from tilemapbase.mapping import project
 from tilemapbase.mapping import to_lonlat
@@ -11,10 +12,12 @@ class ExtentUTM(Extent):
                  longitude_max,
                  latitude_min,
                  latitude_max,
+                 zone_number,
                  proj_cmd):
 
         self.proj_cmd = proj_cmd
-        self.utm_project = Proj(proj_cmd)
+        self.zone_number = zone_number
+        self.utm_project = Proj(proj='utm',zone=self.zone_number,ellps='WGS84')
         xmin, ymin = project(longitude_min, latitude_max)
         xmax, ymax = project(longitude_max, latitude_min)
         super().__init__(xmin, xmax, ymin, ymax)        
@@ -31,5 +34,5 @@ class ExtentUTM(Extent):
         lomin, lamax = to_lonlat(xmin, ymin)
         lomax, lamin = to_lonlat(xmax, ymax)
 
-        return ExtentUTM(lomin, lomax, lamin, lamax, self.proj_cmd)
+        return ExtentUTM(lomin, lomax, lamin, lamax, self.zone_number, self.proj_cmd)
     
